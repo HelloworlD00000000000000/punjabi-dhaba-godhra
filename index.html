@@ -141,7 +141,7 @@ async function sendOrder(){
 
   if(error){
     console.error(error);
-    return alert("Order save nahi hua");
+    return alert("Order save nahi hua: " + error.message);
   }
 
   alert("Order successfully place ho gaya!");
