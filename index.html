@@ -128,5 +128,15 @@ function sendOrder(){
 }
 render();
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://asts1lveicjvfumokkja.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_b5jM_AQA3cf9KRQ3JPjwmg_QhCvq6Bl";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+</script>
 </body>
 </html>
