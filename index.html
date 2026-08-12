@@ -116,16 +116,49 @@ function add(i){cart.push(menu[i]);render();openCart()}
 function render(){let t=0;document.getElementById("items").innerHTML=cart.length?cart.map((x,i)=>{t+=x[1];return `<div class="item"><b>${x[0]}</b> — ₹${x[1]} <button onclick="cart.splice(${i},1);render()">✕</button></div>`}).join(""):"<p>Cart khaali hai.</p>";document.getElementById("total").textContent=t;document.getElementById("count").textContent=cart.length}
 function openCart(){document.getElementById("cart").classList.add("open")}
 function closeCart(){document.getElementById("cart").classList.remove("open")}
-function sendOrder(){
- if(!cart.length)return alert("Pehle food add karein.");
- const name=document.getElementById("name").value.trim(),phone=document.getElementById("phone").value.trim(),type=document.getElementById("type").value,address=document.getElementById("address").value.trim();
- if(!name||!phone)return alert("Naam aur mobile number bharein.");
- const total=cart.reduce((s,x)=>s+x[1],0);
- let msg=`🍛 PUNJABI DHABA ORDER%0A%0AName: ${name}%0APhone: ${phone}%0AType: ${type}%0A`;
- if(address)msg+=`Address: ${address}%0A`;
- msg+="%0AItems:%0A"+cart.map(x=>`• ${x[0]} - ₹${x[1]}`).join("%0A")+`%0A%0ATOTAL: ₹${total}`;
- window.open("https://wa.me/919925744389?text="+msg,"_blank");
-}
+async function sendOrder(){
+  if(!cart.length) return alert("Pehle food add karein");
+
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+
+  if(!name || !phone)
+    return alert("Naam aur mobile number zaroori hai");
+
+  const total = cart.reduce((s,x) => s + x[1], 0);
+  const items = cart.map(x => `${x[0]} - ₹${x[1]}`).join(", ");
+
+  const { error } = await supabaseClient
+    .from("orders")
+    .insert({
+      customer_name: name,
+      phone: phone,
+      address: address,
+      items: items,
+      total: total
+    });
+
+  if(error){
+    console.error(error);
+    return alert("Order save nahi hua");
+  }
+
+  alert("Order successfully place ho gaya!");
+
+  const msg =
+    `🍲 PUNJABI DHABA ORDER\n` +
+    `Name: ${name}\n` +
+    `Mobile: ${phone}\n` +
+    `Address: ${address}\n` +
+    `Items: ${items}\n` +
+    `Total: ₹${total}`;
+
+  window.open(
+    "https://wa.me/919925744389?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
+  }
 render();
 </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
